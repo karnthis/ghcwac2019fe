@@ -5,13 +5,13 @@
 				<div  class="formRow">
 					<!-- //TODO	update the IDs -->
 					<label for="">Is applicant a client of a partner agency?</label>
-					<br><br>
+					<br>
 					<label for="isCRF">No </label>
 					<input type="radio" id="isCRF" 
 					v-model="isClientRadio" 
 					:value="radioFalse"
 					@click="makeClientFalse">
-					<br>
+					 | 
 					<label for="isCRT">Yes </label>
 					<input type="radio" id="isCRT" 
 					v-model="isClientRadio" 
@@ -31,27 +31,27 @@
 				</div>
 				<div  class="formRow">
 					<label for="">Is applicant using public assistance?</label>
-					<br><br>
-					<label for="isCRF">No </label>
-					<input type="radio" id="isCRF" 
+					<br>
+					<label for="onPAF">No </label>
+					<input type="radio" id="onPAF" 
 					v-model="onPubAssist" 
 					:value="radioFalse">
-					<br>
-					<label for="isCRT">Yes </label>
-					<input type="radio" id="isCRT" 
+					 | 
+					<label for="onPAT">Yes </label>
+					<input type="radio" id="onPAT" 
 					v-model="onPubAssist" 
 					:value="radioTrue">
 				</div>
 				<div  class="formRow">
 					<label for="">Does applicant meet age requirement?</label>
-					<br><br>
-					<label for="isCRF">No </label>
-					<input type="radio" id="isCRF" 
+					<br>
+					<label for="isAEF">No </label>
+					<input type="radio" id="isAEF" 
 					v-model="isAgeElig" 
 					:value="radioFalse">
-					<br>
-					<label for="isCRT">Yes </label>
-					<input type="radio" id="isCRT" 
+					 | 
+					<label for="isAET">Yes </label>
+					<input type="radio" id="isAET" 
 					v-model="isAgeElig" 
 					:value="radioTrue">
 				</div>
@@ -61,27 +61,27 @@
 				</div>
 				<div  class="formRow">
 					<label for="">Is applicant in eligible trimester?</label>
-					<br><br>
-					<label for="isCRF">No </label>
-					<input type="radio" id="isCRF" 
+					<br>
+					<label for="isEPF">No </label>
+					<input type="radio" id="isEPF" 
 					v-model="enoughPreg" 
 					:value="radioFalse">
-					<br>
-					<label for="isCRT">Yes </label>
-					<input type="radio" id="isCRT" 
+					 | 
+					<label for="isEPT">Yes </label>
+					<input type="radio" id="isEPT" 
 					v-model="enoughPreg" 
 					:value="radioTrue">
 				</div>
 				<div  class="formRow">
 					<label for="">Is applicant's child age-eligible?</label>
-					<br><br>
-					<label for="isCRF">No </label>
-					<input type="radio" id="isCRF" 
+					<br>
+					<label for="isIEF">No </label>
+					<input type="radio" id="isIEF" 
 					v-model="isInfantElig" 
 					:value="radioFalse">
-					<br>
-					<label for="isCRT">Yes </label>
-					<input type="radio" id="isCRT" 
+					 | 
+					<label for="isIET">Yes </label>
+					<input type="radio" id="isIET" 
 					v-model="isInfantElig" 
 					:value="radioTrue">
 				</div>
@@ -105,19 +105,19 @@ export default {
 	data: () => {
 		return {
 			selected_org: 0,
-			isAClient: false,
+			isAClient: '',
 			radioFalse: false,
 			radioTrue: true,
-			isClientRadio: false,
-			onPubAssist: false,
-			isAgeElig: false,
-			enoughPreg: false,
-			isInfantElig: false
+			isClientRadio: '',
+			onPubAssist: '',
+			isAgeElig: '',
+			enoughPreg: '',
+			isInfantElig: ''
 
 		}
 	},
 	methods: {
-		// ...mapActions(["fetchTodos", "deleteTodo", "updateTodo"]),
+		...mapActions(["fetchEligThings"]),
 		makeClientFalse() {
 			this.isAClient = false
 			this.selected_org = 0
@@ -127,10 +127,11 @@ export default {
 		
 	},
 	computed: {
-		...mapGetters(["checkAllOrgsElig"])
+		...mapGetters(["checkMyOrgElig", "checkAllOrgsElig", "checkAllOrgs"])
 	},
 	created() {
-		
+		this.fetchEligThings()
+		.then(res => console.log(res))
 		// this.allOrgs.push(this.checkAllOrgs)
 		// this.fetchTodos();
 	}

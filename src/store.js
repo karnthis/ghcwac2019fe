@@ -88,6 +88,23 @@ export default new Vuex.Store({
 			.then(res => commit('setAllOrgs', res.data))
 			.catch(err => commit('addError', err))
 		},
+		async fetchEligThings({ commit, state }) {
+			console.log('running...')
+			const _a = await fetch(`${state.URL}/eligibility/org/${state.myOrg.provider_id}`)
+			.then(res => res.json())
+			.then(res => commit('setMyOrgElig', res.data))
+			.catch(err => commit('addError', err))
+			const _b = await fetch(`${state.URL}/eligibility`)
+			.then(res => res.json())
+			.then(res => commit('setAllOrgsElig', res.data))
+			.catch(err => commit('addError', err))
+			const _c = await fetch(`${state.URL}/inventory/byorg/${state.myOrg.provider_id}`)
+			.then(res => res.json())
+			.then(res => commit('setMyOrgInv', res.data))
+			.catch(err => commit('addError', err))
+			console.log('done')
+			return 'finished'
+		},
   },
 	getters: {
 		useURL: state => state.URL,
