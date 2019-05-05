@@ -10,8 +10,10 @@
 
 export default {
 	name: '',
-	props: {
+	data: () => {
+		return {
 
+		}
 	},
 	methods: {
 		// ...mapActions(["fetchTodos", "deleteTodo", "updateTodo"]),
