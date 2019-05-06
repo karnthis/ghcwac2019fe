@@ -20,7 +20,7 @@
 				</div>
 				<div class="formRow hide"
 				:class="{ show: isAClient }">
-					<select v-model="selected_org">
+					<select v-model="answers.isClient">
 						<option 
 						v-for="org in checkAllOrgs"
 						:key="org.provider_id"
@@ -34,12 +34,12 @@
 					<br>
 					<label for="onPAF">No </label>
 					<input type="radio" id="onPAF" 
-					v-model="onPubAssist" 
+					v-model="answers.pubAssist" 
 					:value="radioFalse">
 					 | 
 					<label for="onPAT">Yes </label>
 					<input type="radio" id="onPAT" 
-					v-model="onPubAssist" 
+					v-model="answers.pubAssist" 
 					:value="radioTrue">
 				</div>
 				<div  class="formRow">
@@ -47,12 +47,12 @@
 					<br>
 					<label for="isAEF">No </label>
 					<input type="radio" id="isAEF" 
-					v-model="isAgeElig" 
+					v-model="answers.momAge" 
 					:value="radioFalse">
 					 | 
 					<label for="isAET">Yes </label>
 					<input type="radio" id="isAET" 
-					v-model="isAgeElig" 
+					v-model="answers.momAge" 
 					:value="radioTrue">
 				</div>
 
@@ -64,12 +64,12 @@
 					<br>
 					<label for="isEPF">No </label>
 					<input type="radio" id="isEPF" 
-					v-model="enoughPreg" 
+					v-model="answers.isPreg" 
 					:value="radioFalse">
 					 | 
 					<label for="isEPT">Yes </label>
 					<input type="radio" id="isEPT" 
-					v-model="enoughPreg" 
+					v-model="answers.isPreg" 
 					:value="radioTrue">
 				</div>
 				<div  class="formRow">
@@ -77,16 +77,17 @@
 					<br>
 					<label for="isIEF">No </label>
 					<input type="radio" id="isIEF" 
-					v-model="isInfantElig" 
+					v-model="answers.infantAge" 
 					:value="radioFalse">
 					 | 
 					<label for="isIET">Yes </label>
 					<input type="radio" id="isIET" 
-					v-model="isInfantElig" 
+					v-model="answers.infantAge" 
 					:value="radioTrue">
 				</div>
 
 			</form>
+			<button @click="answerCompare">Click Me</button>
 		</div>
 		
 	</div>
@@ -104,23 +105,64 @@ export default {
 	},
 	data: () => {
 		return {
-			selected_org: 0,
 			isAClient: '',
 			radioFalse: false,
 			radioTrue: true,
 			isClientRadio: '',
-			onPubAssist: '',
-			isAgeElig: '',
-			enoughPreg: '',
-			isInfantElig: ''
+			isEligWithMyOrg: '',
+			otherEligOrgs: [],
+			answers: {
+				isClient: 0,
+				pubAssist: '',
+				momAge: '',
+				isPreg: '',
+				infantAge: '',
+				zip: 0
+			}
+			
 
 		}
 	},
 	methods: {
-		...mapActions(["fetchEligThings"]),
+		...mapActions(["fetchEligThings", "filterActives"]),
 		makeClientFalse() {
 			this.isAClient = false
 			this.selected_org = 0
+		},
+		answerCompare() {
+			this.otherEligOrgs = []
+			const work = Object.assign({}, this.answers)
+			this.filterActives(work)
+			.then(res => {
+				console.dir(res)
+				const resK = Object.keys(res)
+				console.dir(resK)
+				let allMatch = true
+				const myElig = Object.keys(this.checkMyOrgElig[0].elig_json)
+				for (const k in myElig) {
+					if (!resK.includes(myElig[k])) {
+						allMatch = false
+						break
+					}
+				}
+				this.isEligWithMyOrg = allMatch
+				for (const orgElig of this.checkAllOrgsElig) {
+					let allMatch = true
+					// console.dir(orgElig)
+					const otherElig = Object.keys(orgElig.elig_json)
+					for (const k of otherElig) {
+						console.log(k)
+						if (k == 'allReq') continue
+						if (!resK.includes(k)) {
+							allMatch = false
+							break
+						}
+					}
+					if (allMatch) this.otherEligOrgs.push(orgElig.provider_id)
+				}
+			})
+			// .catch(err => console.dir(err))
+			
 		}
 	},
 	components: {

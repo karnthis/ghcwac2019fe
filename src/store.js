@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-const URL = 'https://api.irl.technology'
-
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -70,6 +68,12 @@ export default new Vuex.Store({
 		},
   },
   actions: {
+		filterActives({}, x) {
+			for (const prop in x) {
+				if (!x[prop] || x[prop] === 0) delete x[prop]
+			}
+			return x
+		},
 		fetchAndUpdateCurrUser({ commit, state }) {
 			return fetch(`${state.URL}/users/one/${state.loggedInID}`)
 			.then(res => res.json())
@@ -90,11 +94,15 @@ export default new Vuex.Store({
 		},
 		async fetchEligThings({ commit, state }) {
 			console.log('running...')
+			console.log(state.myOrg.provider_id)
 			const _a = await fetch(`${state.URL}/eligibility/org/${state.myOrg.provider_id}`)
 			.then(res => res.json())
-			.then(res => commit('setMyOrgElig', res.data))
+			.then(res => {
+				console.dir(res)
+				commit('setMyOrgElig', res.data)
+			})
 			.catch(err => commit('addError', err))
-			const _b = await fetch(`${state.URL}/eligibility`)
+			const _b = await fetch(`${state.URL}/eligibility/`)
 			.then(res => res.json())
 			.then(res => commit('setAllOrgsElig', res.data))
 			.catch(err => commit('addError', err))

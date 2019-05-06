@@ -4,12 +4,12 @@
 		<div class="nav">
 			<router-link to="/login">Login</router-link>
 			<router-link to="/">Home</router-link>
-			<router-link to="/inventory">Manage Inventory</router-link>
+			<router-link to="/eligibility">Check Eligibility</router-link>
 			<router-link to="/referals">Referrals</router-link>
 			<router-link to="/classes">Classes</router-link>
+			<router-link to="/inventory">Manage Inventory</router-link>
 			<router-link to="/myorg">Manage Organization</router-link>
-      <router-link to="/eligibility">Check Eligibility</router-link>
-    </div>
+		</div>
 		<div class="admin">
 
 		</div>
