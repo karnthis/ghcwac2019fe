@@ -111,6 +111,8 @@ export default {
 			isClientRadio: '',
 			isEligWithMyOrg: '',
 			otherEligOrgs: [],
+			workElig: [],
+			workElig2: [],
 			answers: {
 				isClient: 0,
 				pubAssist: '',
@@ -134,42 +136,61 @@ export default {
 			const work = Object.assign({}, this.answers)
 			this.filterActives(work)
 			.then(res => {
-				console.dir(res)
-				const resK = Object.keys(res)
-				console.dir(resK)
-				let allMatch = true
-				const myElig = Object.keys(this.checkMyOrgElig[0].elig_json)
-				for (const k in myElig) {
-					if (!resK.includes(myElig[k])) {
-						allMatch = false
-						break
-					}
+				this.workElig = this.checkAllOrgsElig.filter(el => (!el.elig_json.zip || el.elig_json.zip.includes(res.zip)))
+				return res
+			})
+			.then(res => {
+				// console.dir(res)
+				// const resK = Object.keys(res)
+				// console.dir(resK)
+				// this.isEligWithMyOrg = this.compareData(Object.keys(this.checkMyOrgElig[0].elig_json), resK, res.zip)
+				// const myElig = Object.keys(this.checkMyOrgElig[0].elig_json)
+				// for (const k in myElig) {
+				// 	if (!resK.includes(myElig[k])) {
+				// 		allMatch = false
+				// 		break
+				// 	}
+				// }
+				// this.isEligWithMyOrg = allMatch
+
+				return res
+			})
+			.then(res => {
+				for (const orgElig of this.workElig) {
+					const resK = Object.keys(res)
+					// let allMatch = true
+					// // console.dir(orgElig)
+					// const otherElig = Object.keys(orgElig.elig_json)
+					// for (const k of otherElig) {
+					// 	console.log(k)
+					// 	if (k == 'allReq') continue
+					// 	if (!resK.includes(k)) {
+					// 		allMatch = false
+					// 		break
+					// 	}
+					// }
+					// if (allMatch) this.otherEligOrgs.push(orgElig.provider_id)
+					this.workElig2 = this.workElig.filter(el => this.compareData(Object.keys(el.elig_json), resK, res.zip)).map(el => el.provider_id)
+					this.isEligWithMyOrg = workElig2.includes(this.checkMyOrg.provider_id)
 				}
-				this.isEligWithMyOrg = allMatch
-				for (const orgElig of this.checkAllOrgsElig) {
-					let allMatch = true
-					// console.dir(orgElig)
-					const otherElig = Object.keys(orgElig.elig_json)
-					for (const k of otherElig) {
-						console.log(k)
-						if (k == 'allReq') continue
-						if (!resK.includes(k)) {
-							allMatch = false
-							break
-						}
-					}
-					if (allMatch) this.otherEligOrgs.push(orgElig.provider_id)
-				}
+				//TODO	create results
 			})
 			// .catch(err => console.dir(err))
 			
+		},
+		compareData(x, y, yZip = 0) {
+			for (const el of x) {
+				if (!y.includes(el)) return false
+				if (Array.isArray(el) && !el.includes(yZip)) {}
+			}
+			return true
 		}
 	},
 	components: {
 		
 	},
 	computed: {
-		...mapGetters(["checkMyOrgElig", "checkAllOrgsElig", "checkAllOrgs"])
+		...mapGetters(["checkMyOrg", "checkMyOrgElig", "checkAllOrgsElig", "checkAllOrgs"])
 	},
 	created() {
 		this.fetchEligThings()

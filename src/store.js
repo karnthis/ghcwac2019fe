@@ -72,6 +72,7 @@ export default new Vuex.Store({
 			for (const prop in x) {
 				if (!x[prop] || x[prop] === 0) delete x[prop]
 			}
+			x.allReq = true
 			return x
 		},
 		fetchAndUpdateCurrUser({ commit, state }) {
