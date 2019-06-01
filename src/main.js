@@ -6,36 +6,46 @@ import router from './router'
 Vue.config.productionTip = false
 
 router.beforeEach((to, from, next) => {
-	if(to.matched.some(record => record.meta.requireAuth)) {
-		const lsUID = localStorage.getItem('user_id')
-		if (!store.getters.checkAuth && lsUID) {
-			fetch(`${store.getters.useURL}/users/one/${lsUID}`)
-			.then(res => {
-				if (res.status == 200) {
-					return res.json()
-				} else {
-					throw new Error('failure')
-				}
-			})
-			.then(async res => {
-				store.commit('setIsAuthed', true)
-				store.commit('setLoggedInUser', res.data)
-				const _b = await store.dispatch('fetchAndUpdateMyOrg')
-				const _c = await store.dispatch('fetchAndUpdateAllOrgs')
-				next()
-			})
-			.catch(_ => next({ name: 'login'}))
-		} else if (false) { //TODO
-			fetch(`${store.getters.useURL}/heartbeat`)
-			.then(res => {
-				if (res.status == 200) {
-					next()
-				} else {
-					throw new Error('failure')
-				}
-			})
-			.catch(_ => next({ name: 'login'}))
-		}
+	fetch(`${store.getters.useURL}/heartbeat`)
+	.then(res => res.json())
+	.then(res => {
+		if (res.status == 200) return next()
+		return next({ name: 'login'})
+	})
+	.catch(_ => next({ name: 'login'}))
+
+
+
+	// if(to.matched.some(record => record.meta.requireAuth)) {
+	// 	const lsUID = localStorage.getItem('user_id')
+	// 	if (!store.getters.checkAuth && lsUID) {
+	// 		fetch(`${store.getters.useURL}/users/one/${lsUID}`)
+	// 		.then(res => {
+	// 			if (res.status == 200) {
+	// 				return res.json()
+	// 			} else {
+	// 				throw new Error('failure')
+	// 			}
+	// 		})
+	// 		.then(async res => {
+	// 			store.commit('setIsAuthed', true)
+	// 			store.commit('setLoggedInUser', res.data)
+	// 			const _b = await store.dispatch('fetchAndUpdateMyOrg')
+	// 			const _c = await store.dispatch('fetchAndUpdateAllOrgs')
+	// 			next()
+	// 		})
+	// 		.catch(_ => next({ name: 'login'}))
+	// 	} else if (false) { //TODO
+	// 		fetch(`${store.getters.useURL}/heartbeat`)
+	// 		.then(res => {
+	// 			if (res.status == 200) {
+	// 				next()
+	// 			} else {
+	// 				throw new Error('failure')
+	// 			}
+	// 		})
+	// 		.catch(_ => next({ name: 'login'}))
+	// 	}
 
 		// console.log()
 			// if (localStorage.getItem('jwt') == null) {
@@ -57,9 +67,28 @@ router.beforeEach((to, from, next) => {
 			// 		}
 			// }
 			// console.log('auth req')
-			next()
-	} else {
-			next() 
+	// 		next()
+	// } else {
+	// 		next() 
+	// }
+}, (to, from, next) => {
+	const url = store.getters.useURL
+	//TODO
+	if (!store.getters.checkCurrUser.full_name) {
+		fetch(`${url}/user/mySummary`)
+		.then(res => res.json())
+		.then(res => {
+			store.commit('setLoggedInUser', res[0])
+		})
+		.catch(err => console.log(err))
+	}
+	if (!store.getters.checkMyOrg.provider_name) {
+		fetch(`${url}/org/myOrg`)
+		.then(res => res.json())
+		.then(res => {
+			store.commit('setMyOrg', res[0])
+		})
+		.catch(err => console.log(err))
 	}
 })
 

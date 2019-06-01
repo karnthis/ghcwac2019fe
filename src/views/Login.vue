@@ -41,7 +41,7 @@ export default {
 			]),
 		...mapMutations(["setLoggedInID", "setIsAuthed"]),
 		submitLogin: async function() {
-			const _ = await fetch(`${this.useURL}/auth`, {
+			const _ = await fetch(`${this.useURL}/login`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

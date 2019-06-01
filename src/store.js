@@ -5,15 +5,10 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-		URL: 'https://api.irl.technology',
-		isAuthed: false,
-		loggedInID: 0,
-		loggedInUser: {
-			full_name: 'Temperance Brennan'
-		},
-		myOrg: {
-			provider_name: 'Jeffersonian'
-		},
+		URL: 'https://api.cwac2019.irl.technology/v2',
+		// loggedInID: 0,
+		loggedInUser: {},
+		myOrg: {},
 		myOrgElig: {},
 		myOrgInv: 0,
 		allOrgs: [],
@@ -27,12 +22,9 @@ export default new Vuex.Store({
 		// increment (state, n) {
 		// 	state.count += n
 		// },
-		setIsAuthed(state, x) {
-			state.isAuthed = x
-		},
-		setLoggedInID(state, x) {
-			state.loggedInID = x
-		},
+		// setLoggedInID(state, x) {
+		// 	state.loggedInID = x
+		// },
 		setLoggedInUser(state, x) {
 			state.loggedInUser = x
 		},
@@ -117,8 +109,7 @@ export default new Vuex.Store({
   },
 	getters: {
 		useURL: state => state.URL,
-		checkAuth: state => state.isAuthed,
-		checkCurrID: state => state.loggedInID,
+		// checkCurrID: state => state.loggedInID,
 		checkCurrUser: state => state.loggedInUser,
 		checkMyOrg: state => state.myOrg,
 		checkMyOrgElig: state => state.myOrgElig,
