@@ -6,13 +6,25 @@ import router from './router'
 Vue.config.productionTip = false
 
 router.beforeEach((to, from, next) => {
-	fetch(`${store.getters.useURL}/heartbeat`)
-	.then(res => res.json())
-	.then(res => {
-		if (res.status == 200) return next()
-		return next({ name: 'login'})
-	})
-	.catch(_ => next({ name: 'login'}))
+	if (to.matched.some(record => record.meta.requireAuth)) {
+		if (!store.getters.checkCurrUser.full_name) {
+			store.dispatch('sendFetch', {path:'/heartbeat', method:'GET'})
+			.then(res => {
+				console.log(res)
+				if (res.status == 200) {
+					store.dispatch('loadUserInfo')
+					next()
+				} else {
+					next({ name: 'login'})
+				}
+			})
+		} else {
+			next()
+		}
+	} else {
+		next()
+	}
+	
 
 
 
