@@ -5,13 +5,13 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-		// URL: 'https://api.cwac2019.irl.technology/v2',
-		URL: 'http://localhost:51515/v2',
+		URL: 'https://api.cwac2019.irl.technology/v2',
+		// URL: 'http://localhost:51515/v2',
 		// loggedInID: 0,
 		loggedInUser: {},
 		myOrg: {},
 		myOrgElig: {},
-		myOrgInv: null,
+		myOrgInv: '',
 		allOrgSummary: [],
 		allOrgDetail: [],
 		allOrgsElig: [],
@@ -42,8 +42,11 @@ export default new Vuex.Store({
 		// dispenseMyOrgInv(state) {
 		// 	state.myOrgInv--
 		// },
-		setAllOrgs(state, x) {
-			state.allOrgs = x
+		setAllOrgSummary(state, x) {
+			state.allOrgSummary = x
+		},
+		setAllOrgDetail(state, x) {
+			state.allOrgDetail = x
 		},
 		setAllOrgsElig(state, x) {
 			state.allOrgsElig = x
@@ -62,6 +65,7 @@ export default new Vuex.Store({
 		},
 	},
 	actions: {
+
 		sendFetch({ state }, bundle) {
 			const { path, method, body } = bundle
 			// console.log(`method: ${method}`)
@@ -75,17 +79,48 @@ export default new Vuex.Store({
 			}
 			if (body) fetchObject.body = JSON.stringify(body)
 			return fetch(`${state.URL}${path}`, fetchObject)
-			.then(res => res.json().then(json => ({
+			.then(res => {console.dir(res);return res.json().then(json => ({
 				status: res.status,
 				json
 			})
-			))
+			)})
 		},
-		setupEligibility({ commit, state, dispatch }) {
-
+		async loadUserInfo({ commit, state, dispatch }) {
+			dispatch('sendFetch', {path:'/user/mySummary', method:'GET'})
+			.then(res => {
+				// console.dir(res.json)
+				if (res.status == 200) commit('setLoggedInUser', res.json.data)
+			})
+			dispatch('sendFetch', {path:'/org/myOrg', method:'GET'})
+			.then(res => {
+				if (res.status == 200) commit('setMyOrg', res.json.data)
+			})
+		},
+		setupHome({ commit, state, dispatch }) {
+			if (!state.allOrgSummary.length) {
+				dispatch('sendFetch', {path:'/org/allSummary', method:'GET'})
+				.then(res => {
+					// console.log(res)
+					if (res.status == 200) commit('setAllOrgSummary',res.json.data)
+				})
+			}
+			if (!state.allOrgsElig.length) {
+				dispatch('sendFetch', {path:'/elig/allOrg', method:'GET'})
+				.then(res => {
+					// console.log(res)
+					if (res.status == 200) commit('setAllOrgsElig',res.json.data)
+				})
+			}
+			if (!state.allOrgsInv.length) {
+				dispatch('sendFetch', {path:'/inv/allOrgs', method:'GET'})
+				.then(res => {
+					// console.log(res)
+					if (res.status == 200) commit('setAllOrgsInv',res.json.data)
+				})
+			}
 		},
 		setupInventory({ commit, state, dispatch }) {
-			if (this.myOrgInv == null) {
+			if (this.myOrgInv == '') {
 				dispatch('sendFetch', {path:'/inv/myOrg', method:'GET'})
 				.then(res => {
 					console.log(res)
@@ -161,7 +196,7 @@ export default new Vuex.Store({
 		checkMyOrg: state => state.myOrg,
 		checkMyOrgElig: state => state.myOrgElig,
 		checkMyOrgInv: state => state.myOrgInv,
-		checkAllOrgs: state => state.allOrgs,
+		checkAllOrgSummary: state => state.AllOrgSummary,
 		checkAllOrgsElig: state => state.allOrgsElig,
 		checkAllOrgsInv: state => state.allOrgsInv,
 		checkClasses: state => state.classes,

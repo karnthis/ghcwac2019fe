@@ -5,7 +5,7 @@
 				Current Inventory Count
 			</div>
 			<div>
-				{{ checkMyOrgInv.inv_count }}
+				{{ checkMyOrgInv }}
 			</div>
 		</div>
 		<div>
@@ -51,13 +51,13 @@ export default {
 		submitDispense: async function() {
 			this.sendFetch({path:'/inv/myOrgDispense', method:'PUT'})
 			.then(res => {
-				if (res.status == 200) this.setMyOrgInv(res.data.inv_count)
+				if (res.status == 200) this.setMyOrgInv(res.json.data.inv_count)
 			})
 		},
 		submitInvUpdate: async function() {
-			this.sendFetch({path:'/inv/myOrg', method:'POST', body:{newInvCount: this.invInput}})
+			this.sendFetch({path:'/inv/myOrg', method:'PUT', body:{newInvCount: this.invInput}})
 			.then(res => {
-				if (res.status == 200) this.setMyOrgInv(res.data.inv_count)
+				if (res.status == 200) this.setMyOrgInv(res.json.data.inv_count)
 			})
 		}
 	},

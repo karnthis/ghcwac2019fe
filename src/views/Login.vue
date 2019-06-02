@@ -34,7 +34,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapActions(["sendFetch"]),
+		...mapActions(["sendFetch", "loadUserInfo"]),
 		...mapMutations(["setLoggedInUser", "setMyOrg"]),
 		logInUser: function() {
 			this.sendFetch({path:'/login', method:'POST', body:{
@@ -44,16 +44,8 @@ export default {
 			.then(async res => {
 						// console.log(res)
 				if (res.status == 200) {
-					let _ = await this.sendFetch({path:'/user/mySummary', method:'GET'})
-					.then(res => {
-						// console.dir(res.json)
-						if (res.status == 200) this.$store.commit('setLoggedInUser', res.json.data)
-					})
-					_ = await this.sendFetch({path:'/org/myOrg', method:'GET'})
-					.then(res => {
-						if (res.status == 200) this.$store.commit('setMyOrg', res.json.data)
-					})
-					router.push('/home')
+					this.loadUserInfo()
+					router.push('/')
 				}
 				
 			})
