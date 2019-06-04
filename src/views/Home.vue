@@ -91,14 +91,13 @@
 				</div>
 
 			</form>
-			<!-- <button @click="processAnswers">Click Me</button> -->
+			<button @click="processAnswers">Click Me</button>
 		</div>
 	</div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-// import UserInfo from '@/components/UserInfo.vue'
 
 export default {
 	name: 'home',
