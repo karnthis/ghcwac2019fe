@@ -1,211 +1,192 @@
 <template>
-	<div class="elig">
+	<div class="eligibility">
 		<div class="entry">
 			<form >
-				<div  class="formRow">
-					<!-- //TODO	update the IDs -->
-					<label for="">Is applicant a client of a partner agency?</label>
+					<!-- @click="makeClientFalse" required> -->
+				<div id="isCRDiv" class="formRow">
+					<label for="isCRDiv">Is applicant a client of a partner agency?</label>
 					<br>
 					<label for="isCRF">No </label>
-					<input type="radio" id="isCRF" 
-					v-model="isClientRadio" 
+					<input type="radio" id="isCRF" name="isCR"
 					:value="radioFalse"
-					@click="makeClientFalse">
+					v-model="isClientRadio" />
 					 | 
 					<label for="isCRT">Yes </label>
-					<input type="radio" id="isCRT" 
-					v-model="isClientRadio" 
+					<input type="radio" id="isCRT" name="isCR"
 					:value="radioTrue"
-					@click="isAClient=true">
+					v-model="isClientRadio" />
 				</div>
-				<div class="formRow hide"
-				:class="{ show: isAClient }">
-					<select v-model="answers.isClient">
+				<!-- <div class="formRow hide"
+				:class="{ show: isAClient }"> -->
+				<div v-if="isClientRadio">
+					<label for="ofWA">Which agency?</label>
+					<br>
+					<select id="ofWA" 
+					v-model="checkMyOrgElig.isClient"
+					@change="updateIsAClient($event.target.value)">
 						<option 
-						v-for="org in checkAllOrgs"
+						v-for="org in checkAllOrgSummary"
 						:key="org.provider_id"
 						:value="org.provider_id">
 							{{org.provider_name}}
 						</option>
 					</select>
 				</div>
-				<div  class="formRow">
-					<label for="">Is applicant using public assistance?</label>
+				<div id="onPADiv" class="formRow">
+					<label for="onPADiv">Is applicant using public assistance?</label>
 					<br>
 					<label for="onPAF">No </label>
-					<input type="radio" id="onPAF" 
-					v-model="answers.pubAssist" 
-					:value="radioFalse">
+					<input type="radio" id="onPAF" name="onPA"
+					:value="radioFalse" 
+					v-model="checkMyOrgElig.pubAssist"
+					@change="updateOnPA($event.target.value)" />
 					 | 
 					<label for="onPAT">Yes </label>
-					<input type="radio" id="onPAT" 
-					v-model="answers.pubAssist" 
-					:value="radioTrue">
+					<input type="radio" id="onPAT" name="onPA"
+					:value="radioTrue"
+					v-model="checkMyOrgElig.pubAssist"
+					@change="updateOnPA($event.target.value)" />
 				</div>
-				<div  class="formRow">
-					<label for="">Does applicant meet age requirement?</label>
-					<br>
-					<label for="isAEF">No </label>
-					<input type="radio" id="isAEF" 
-					v-model="answers.momAge" 
-					:value="radioFalse">
-					 | 
-					<label for="isAET">Yes </label>
-					<input type="radio" id="isAET" 
-					v-model="answers.momAge" 
-					:value="radioTrue">
-				</div>
+				
+				<!-- <div>
+					<input type="radio" name="frequency" :value="1" @change="updateFrequency($event.target.value)" />
+					<input type="radio" name="frequency" :value="0" @change="updateFrequency($event.target.value)" />
+				</div> -->
 
 				<div>
 					<!-- todo | add zipcode -->
 				</div>
-				<div  class="formRow">
-					<label for="">Is applicant in eligible trimester?</label>
+				<div id="isEPDiv" class="formRow">
+					<label for="isEPDiv">Is applicant in eligible trimester?</label>
 					<br>
 					<label for="isEPF">No </label>
-					<input type="radio" id="isEPF" 
-					v-model="answers.isPreg" 
-					:value="radioFalse">
+					<input type="radio" id="isEPF" name="isEP"
+					v-model="checkMyOrgElig.isPreg" 
+					:value="radioFalse"
+					@change="updateIsEP($event.target.value)" />
 					 | 
 					<label for="isEPT">Yes </label>
-					<input type="radio" id="isEPT" 
-					v-model="answers.isPreg" 
-					:value="radioTrue">
+					<input type="radio" id="isEPT" name="isEP"
+					v-model="checkMyOrgElig.isPreg" 
+					:value="radioTrue"
+					@change="updateIsEP($event.target.value)" />
 				</div>
-				<div  class="formRow">
-					<label for="">Is applicant's child age-eligible?</label>
+				<div id="isAEDiv" class="formRow">
+					<label for="isAEDiv">Is applicant age-eligible?</label>
+					<br>
+					<label for="isAEF">No </label>
+					<input type="radio" id="isAEF" name="isAE"
+					v-model="checkMyOrgElig.momAge" 
+					:value="radioFalse"
+					@change="updateIsAE($event.target.value)" />
+					 | 
+					<label for="isAET">Yes </label>
+					<input type="radio" id="isAET" name="isAE"
+					v-model="checkMyOrgElig.momAge" 
+					:value="radioTrue"
+					@change="updateIsAE($event.target.value)" />
+				</div>
+				<div id="isIEDiv" class="formRow">
+					<label for="isIEDiv">Is applicant's child age-eligible?</label>
 					<br>
 					<label for="isIEF">No </label>
-					<input type="radio" id="isIEF" 
-					v-model="answers.infantAge" 
-					:value="radioFalse">
+					<input type="radio" id="isIEF" name="isIE"
+					v-model="checkMyOrgElig.infantAge" 
+					:value="radioFalse"
+					@change="updateIsIE($event.target.value)" />
 					 | 
 					<label for="isIET">Yes </label>
-					<input type="radio" id="isIET" 
-					v-model="answers.infantAge" 
-					:value="radioTrue">
+					<input type="radio" id="isIET" name="isIE"
+					v-model="checkMyOrgElig.infantAge" 
+					:value="radioTrue"
+					@change="updateIsIE($event.target.value)" />
 				</div>
 
 			</form>
-			<button @click="answerCompare">Click Me</button>
+			<button @click="saveRequirements">Click Me</button>
 		</div>
-		
 	</div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-// import UserInfo from '@/components/UserInfo.vue'
 
 export default {
-	name: '',
-	props: {
-		// selected_org: '',
-		// allOrgs: []
-	},
+	name: 'eligibility',
 	data: () => {
 		return {
-			isAClient: '',
+			isAClient: false,
 			radioFalse: false,
 			radioTrue: true,
-			isClientRadio: '',
-			isEligWithMyOrg: '',
-			otherEligOrgs: [],
-			workElig: [],
-			workElig2: [],
+			isClientRadio: false,
 			answers: {
-				isClient: 0,
-				pubAssist: '',
-				momAge: '',
-				isPreg: '',
-				infantAge: '',
-				zip: 0
+				isClient: false,
+				pubAssist: false,
+				momAge: false,
+				isPreg: false,
+				infantAge: false,
+				// zip: ''
 			}
-			
-
 		}
 	},
 	methods: {
-		...mapActions(["fetchEligThings", "filterActives"]),
-		makeClientFalse() {
-			this.isAClient = false
-			this.selected_org = 0
+		...mapActions(["setupHome"]),
+		updateIsCR(newValue) {
+			this.isClientRadio = newValue
 		},
-		answerCompare() {
-			this.otherEligOrgs = []
-			const work = Object.assign({}, this.answers)
-			this.filterActives(work)
-			.then(res => {
-				this.workElig = this.checkAllOrgsElig.filter(el => (!el.elig_json.zip || el.elig_json.zip.includes(res.zip)))
-				return res
-			})
-			.then(res => {
-				// console.dir(res)
-				// const resK = Object.keys(res)
-				// console.dir(resK)
-				// this.isEligWithMyOrg = this.compareData(Object.keys(this.checkMyOrgElig[0].elig_json), resK, res.zip)
-				// const myElig = Object.keys(this.checkMyOrgElig[0].elig_json)
-				// for (const k in myElig) {
-				// 	if (!resK.includes(myElig[k])) {
-				// 		allMatch = false
-				// 		break
-				// 	}
-				// }
-				// this.isEligWithMyOrg = allMatch
-
-				return res
-			})
-			.then(res => {
-				for (const orgElig of this.workElig) {
-					const resK = Object.keys(res)
-					// let allMatch = true
-					// // console.dir(orgElig)
-					// const otherElig = Object.keys(orgElig.elig_json)
-					// for (const k of otherElig) {
-					// 	console.log(k)
-					// 	if (k == 'allReq') continue
-					// 	if (!resK.includes(k)) {
-					// 		allMatch = false
-					// 		break
-					// 	}
-					// }
-					// if (allMatch) this.otherEligOrgs.push(orgElig.provider_id)
-					this.workElig2 = this.workElig.filter(el => this.compareData(Object.keys(el.elig_json), resK, res.zip)).map(el => el.provider_id)
-					this.isEligWithMyOrg = workElig2.includes(this.checkMyOrg.provider_id)
-				}
-				//TODO	create results
-			})
-			// .catch(err => console.dir(err))
-			
+		updateIsAClient(newValue) {
+			this.answers.isClient = newValue
+			// console.log(this.answers.pubAssist)
 		},
-		compareData(x, y, yZip = 0) {
-			for (const el of x) {
-				if (!y.includes(el)) return false
-				if (Array.isArray(el) && !el.includes(yZip)) {}
+		updateOnPA(newValue) {
+			this.answers.pubAssist = newValue
+			// console.log(this.answers.pubAssist)
+		},
+		updateIsEP(newValue) {
+			this.answers.pubAssist = newValue
+			// console.log(this.answers.pubAssist)
+		},
+		updateIsAE(newValue) {
+			this.answers.pubAssist = newValue
+			// console.log(this.answers.pubAssist)
+		},
+		updateIsIE(newValue) {
+			this.answers.pubAssist = newValue
+			// console.log(this.answers.pubAssist)
+		},
+		// updateFrequency() {
+		// 	this.$store.commit('setMyOrgElig', this.answers)
+		// },
+		sortEm(all, sub) {
+			for (const key in sub) {
+				if (!sub[key]) delete sub[key]
 			}
-			return true
+			return (() => {
+				return all.filter((obj) => {
+					return Object.keys(sub).every((c) => {
+						return obj[c] == sub[c];
+					});
+				});
+			})()
+		},
+		saveRequirements() {
+			
 		}
 	},
 	components: {
 		
 	},
 	computed: {
-		...mapGetters(["checkMyOrg", "checkMyOrgElig", "checkAllOrgsElig", "checkAllOrgs"])
+		...mapGetters(["checkMyOrgElig","checkAllOrgSummary"])
 	},
 	created() {
-		this.fetchEligThings()
-		.then(res => console.log(res))
-		// this.allOrgs.push(this.checkAllOrgs)
-		// this.fetchTodos();
+		this.$store.dispatch('setupEligibility')
+	},
+	beforeCreate() {
 	}
 }
 </script>
 
 <style scoped>
-.hide {
-	display: none;
-}
-.show {
-	display: block;
-}
+
 </style>

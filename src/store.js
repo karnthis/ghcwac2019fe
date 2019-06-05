@@ -132,6 +132,22 @@ export default new Vuex.Store({
 		setupReferral({ commit, state, dispatch }) {
 
 		},
+		setupEligibility({ commit, state, dispatch }) {
+			if (Object.keys(state.allOrgSummary).length === 0) {
+				dispatch('sendFetch', {path:'/elig/myOrg', method:'GET'})
+				.then(res => {
+					// console.log(res)
+					if (res.status == 200) commit('setMyOrgElig',res.json.data.elig_json)
+				})
+			}
+			if (!state.allOrgSummary.length) {
+				dispatch('sendFetch', {path:'/org/allSummary', method:'GET'})
+				.then(res => {
+					console.log(res)
+					if (res.status == 200) commit('setAllOrgSummary',res.json.data)
+				})
+			}
+		},
 		setupEvents({ commit, state, dispatch }) {
 
 		},
