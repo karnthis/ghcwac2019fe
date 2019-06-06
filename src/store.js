@@ -79,7 +79,9 @@ export default new Vuex.Store({
 			}
 			if (body) fetchObject.body = JSON.stringify(body)
 			return fetch(`${state.URL}${path}`, fetchObject)
-			.then(res => {console.dir(res);return res.json().then(json => ({
+			.then(res => {
+				// console.dir(res);
+				return res.json().then(json => ({
 				status: res.status,
 				json
 			})
