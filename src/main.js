@@ -1,9 +1,11 @@
 import Vue from 'vue'
+// import Vuetify from 'vuetify'
 import './plugins/vuetify'
 import App from './App.vue'
 import store from './store'
 import router from './router'
 
+// Vue.use(Vuetify)
 Vue.config.productionTip = false
 
 router.beforeEach((to, from, next) => {

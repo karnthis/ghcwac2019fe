@@ -1,159 +1,108 @@
 <template>
-	<div class="home">
-		<div class="entry">
-			<form >
-					<!-- @click="makeClientFalse" required> -->
-				<div id="isCRDiv" class="formRow">
-					<label for="isCRDiv">Is applicant a client of a partner agency?</label>
-					<br>
-					<label for="isCRF">No </label>
-					<input type="radio" id="isCRF" 
-					v-model="isClientRadio" 
-					:value="radioFalse"
-					@click="isAClient=false">
-					 | 
-					<label for="isCRT">Yes </label>
-					<input type="radio" id="isCRT" 
-					v-model="isClientRadio" 
-					:value="radioTrue"
-					@click="isAClient=true">
-				</div>
-				<!-- <div class="formRow hide"
-				:class="{ show: isAClient }"> -->
-				<div v-if="isAClient">
-					<label for="ofWA">Which agency?</label>
-					<br>
-					<select id="ofWA" v-model="answers.isClient">
-						<option 
-						v-for="org in checkAllOrgSummary"
-						:key="org.provider_id"
-						:value="org.provider_id">
-							{{org.provider_name}}
-						</option>
-					</select>
-				</div>
-				<div id="onPADiv" class="formRow">
-					<label for="onPADiv">Is applicant using public assistance?</label>
-					<br>
-					<label for="onPAF">No </label>
-					<input type="radio" id="onPAF" 
-					v-model="answers.pubAssist" 
-					:value="radioFalse">
-					 | 
-					<label for="onPAT">Yes </label>
-					<input type="radio" id="onPAT" 
-					v-model="answers.pubAssist" 
-					:value="radioTrue">
-				</div>
-				
+  <v-content id="inspire">
+    <v-container fluid>
+      <v-layout row wrap>
+        <v-flex xs4>
+          <v-card>
+            <v-card-title>
+              <span class="headline">Check Applicant</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container fluid>
+                <v-layout row xs6>
+                  <v-flex mt-4>
+                    <span class="title">Applicant is a client of a partner agency:</span>
+                  </v-flex>
+                  <v-flex>
+                    <v-switch v-model="isClientRadio" :label="`${isClientRadio.toString()}`"></v-switch>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+              <v-flex v-if="isClientRadio">
+                <v-select :items="checkAllOrgSummary" label="Select Partner Agency"></v-select>
+              </v-flex>
 
-				<div>
-					<!-- todo | add zipcode -->
-				</div>
-				<div id="isEPDiv" class="formRow">
-					<label for="isEPDiv">Is applicant in eligible trimester?</label>
-					<br>
-					<label for="isEPF">No </label>
-					<input type="radio" id="isEPF" 
-					v-model="answers.isPreg" 
-					:value="radioFalse">
-					 | 
-					<label for="isEPT">Yes </label>
-					<input type="radio" id="isEPT" 
-					v-model="answers.isPreg" 
-					:value="radioTrue">
-				</div>
-				<div id="isAEDiv" class="formRow">
-					<label for="isAEDiv">Is applicant age-eligible?</label>
-					<br>
-					<label for="isAEF">No </label>
-					<input type="radio" id="isAEF" 
-					v-model="answers.momAge" 
-					:value="radioFalse">
-					 | 
-					<label for="isAET">Yes </label>
-					<input type="radio" id="isAET" 
-					v-model="answers.momAge" 
-					:value="radioTrue">
-				</div>
-				<div id="isIEDiv" class="formRow">
-					<label for="isIEDiv">Is applicant's child age-eligible?</label>
-					<br>
-					<label for="isIEF">No </label>
-					<input type="radio" id="isIEF" 
-					v-model="answers.infantAge" 
-					:value="radioFalse">
-					 | 
-					<label for="isIET">Yes </label>
-					<input type="radio" id="isIET" 
-					v-model="answers.infantAge" 
-					:value="radioTrue">
-				</div>
+              <span>Applicant is using public assistance:</span>
+              <v-switch v-model="answers.pubAssist" :label="`${answers.pubAssist.toString()}`"></v-switch>
 
-			</form>
-			<button @click="processAnswers">Click Me</button>
-		</div>
-	</div>
+              <span>Applicant is in eligible trimester:</span>
+              <v-switch v-model="answers.isPreg" :label="`${answers.isPreg.toString()}`"></v-switch>
+
+              <span>Applicant is age-eligible:</span>
+              <v-switch v-model="answers.momAge" :label="`${answers.momAge.toString()}`"></v-switch>
+
+              <span>Applicant's child is age-eligible:</span>
+              <v-switch v-model="answers.infantAge" :label="`${answers.infantAge.toString()}`"></v-switch>
+
+              <!-- <span>Applicant ddd:</span>
+              <v-switch v-model="answers.pubAssist" :label="`${answers.pubAssist.toString()}`"></v-switch>-->
+
+              <div class="entry">
+                <button @click="processAnswers">Click Me</button>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-content>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from "vuex";
 
 export default {
-	name: 'home',
-	data: () => {
-		return {
-			isAClient: false,
-			radioFalse: false,
-			radioTrue: true,
-			isClientRadio: false,
-			answers: {
-				isClient: false,
-				pubAssist: false,
-				momAge: false,
-				isPreg: false,
-				infantAge: false,
-				// zip: ''
-			}
-		}
-	},
-	methods: {
-		...mapActions(["setupHome"]),
-		sortEm(all, sub) {
-			for (const key in sub) {
-				if (!sub[key]) delete sub[key]
-			}
-			return (() => {
-				return all.filter((obj) => {
-					return Object.keys(sub).every((c) => {
-						return obj[c] == sub[c];
-					});
-				});
-			})()
-		},
-		processAnswers() {
-			const passingOrgs = this.sortEm(this.checkAllOrgsElig, this.answers)
-			if (passingOrgs.length) {
-
-			}
-		}
-	},
-	components: {
-		
-	},
-	computed: {
-		...mapGetters(["checkAllOrgSummary","checkAllOrgsElig","checkAllOrgsInv"])
-	},
-	created() {
-		// this.setupHome()
-		this.$store.dispatch('setupHome')
-		// this.fetchTodos();
-	},
-	beforeCreate() {
-	}
-}
+  name: "home",
+  data: () => {
+    return {
+      switchtrue: true,
+      switchfalse: false,
+      isAClient: false,
+      radioFalse: false,
+      radioTrue: true,
+      isClientRadio: false,
+      answers: {
+        isClientOf: false,
+        pubAssist: false,
+        momAge: false,
+        isPreg: false,
+        infantAge: false
+        // zip: ''
+      }
+    };
+  },
+  methods: {
+    ...mapActions(["setupHome"]),
+    sortEm(all, sub) {
+      for (const key in sub) {
+        if (!sub[key]) delete sub[key];
+      }
+      return (() => {
+        return all.filter(obj => {
+          return Object.keys(sub).every(c => {
+            return obj[c] == sub[c];
+          });
+        });
+      })();
+    },
+    processAnswers() {
+      const passingOrgs = this.sortEm(this.checkAllOrgsElig, this.answers);
+      if (passingOrgs.length) {
+      }
+    }
+  },
+  components: {},
+  computed: {
+    ...mapGetters(["checkAllOrgSummary", "checkAllOrgsElig", "checkAllOrgsInv"])
+  },
+  created() {
+    // this.setupHome()
+    this.$store.dispatch("setupHome");
+    // this.fetchTodos();
+  },
+  beforeCreate() {}
+};
 </script>
 
 <style scoped>
-
 </style>

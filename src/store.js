@@ -5,8 +5,8 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-		URL: 'https://api.cwac2019.irl.technology/v2',
-		// URL: 'http://localhost:51515/v2',
+		// URL: 'https://api.cwac2019.irl.technology/v2',
+		URL: 'http://localhost:51515/v2',
 		// loggedInID: 0,
 		loggedInUser: {},
 		myOrg: {},
