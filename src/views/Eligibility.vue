@@ -1,111 +1,80 @@
 <template>
-	<div class="eligibility">
-		<div class="entry">
-			<form >
-					<!-- @click="makeClientFalse" required> -->
-				<div id="isCRDiv" class="formRow">
-					<label for="isCRDiv">Is applicant a client of a partner agency?</label>
-					<br>
-					<label for="isCRF">No </label>
-					<input type="radio" id="isCRF" name="isCR"
-					:value="radioFalse"
-					v-model="isClientRadio" />
-					 | 
-					<label for="isCRT">Yes </label>
-					<input type="radio" id="isCRT" name="isCR"
-					:value="radioTrue"
-					v-model="isClientRadio" />
-				</div>
-				<!-- <div class="formRow hide"
-				:class="{ show: isAClient }"> -->
-				<div v-if="isClientRadio">
-					<label for="ofWA">Which agency?</label>
-					<br>
-					<select id="ofWA" 
-					v-model="checkMyOrgElig.isClient"
-					@change="updateIsAClient($event.target.value)">
-						<option 
-						v-for="org in checkAllOrgSummary"
-						:key="org.provider_id"
-						:value="org.provider_id">
-							{{org.provider_name}}
-						</option>
-					</select>
-				</div>
-				<div id="onPADiv" class="formRow">
-					<label for="onPADiv">Is applicant using public assistance?</label>
-					<br>
-					<label for="onPAF">No </label>
-					<input type="radio" id="onPAF" name="onPA"
-					:value="radioFalse" 
-					v-model="checkMyOrgElig.pubAssist"
-					@change="updateOnPA($event.target.value)" />
-					 | 
-					<label for="onPAT">Yes </label>
-					<input type="radio" id="onPAT" name="onPA"
-					:value="radioTrue"
-					v-model="checkMyOrgElig.pubAssist"
-					@change="updateOnPA($event.target.value)" />
-				</div>
-				
-				<!-- <div>
-					<input type="radio" name="frequency" :value="1" @change="updateFrequency($event.target.value)" />
-					<input type="radio" name="frequency" :value="0" @change="updateFrequency($event.target.value)" />
-				</div> -->
-
-				<div>
-					<!-- todo | add zipcode -->
-				</div>
-				<div id="isEPDiv" class="formRow">
-					<label for="isEPDiv">Is applicant in eligible trimester?</label>
-					<br>
-					<label for="isEPF">No </label>
-					<input type="radio" id="isEPF" name="isEP"
-					v-model="checkMyOrgElig.isPreg" 
-					:value="radioFalse"
-					@change="updateIsEP($event.target.value)" />
-					 | 
-					<label for="isEPT">Yes </label>
-					<input type="radio" id="isEPT" name="isEP"
-					v-model="checkMyOrgElig.isPreg" 
-					:value="radioTrue"
-					@change="updateIsEP($event.target.value)" />
-				</div>
-				<div id="isAEDiv" class="formRow">
-					<label for="isAEDiv">Is applicant age-eligible?</label>
-					<br>
-					<label for="isAEF">No </label>
-					<input type="radio" id="isAEF" name="isAE"
-					v-model="checkMyOrgElig.momAge" 
-					:value="radioFalse"
-					@change="updateIsAE($event.target.value)" />
-					 | 
-					<label for="isAET">Yes </label>
-					<input type="radio" id="isAET" name="isAE"
-					v-model="checkMyOrgElig.momAge" 
-					:value="radioTrue"
-					@change="updateIsAE($event.target.value)" />
-				</div>
-				<div id="isIEDiv" class="formRow">
-					<label for="isIEDiv">Is applicant's child age-eligible?</label>
-					<br>
-					<label for="isIEF">No </label>
-					<input type="radio" id="isIEF" name="isIE"
-					v-model="checkMyOrgElig.infantAge" 
-					:value="radioFalse"
-					@change="updateIsIE($event.target.value)" />
-					 | 
-					<label for="isIET">Yes </label>
-					<input type="radio" id="isIET" name="isIE"
-					v-model="checkMyOrgElig.infantAge" 
-					:value="radioTrue"
-					@change="updateIsIE($event.target.value)" />
-				</div>
-
-			</form>
-			<button @click="saveRequirements">Click Me</button>
-		</div>
-	</div>
+  <v-content id="eligibility">
+    <v-container fluid>
+      <v-layout row wrap>
+        <v-flex xs4>
+          <v-card>
+            <v-card-title>
+              <span class="headline">Check Applicant</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-layout align-start justify-space-between row fill-height>
+                  <v-flex xs8 mt-4>
+                    <span class="title">Applicant is a client of a partner agency:</span>
+                  </v-flex>
+                  <v-flex xs2>
+                    <v-switch v-model="isClientRadio" :label="`${isClientRadio.toString()}`"></v-switch>
+                  </v-flex>
+                </v-layout>
+                <v-layout align-start justify-space-between row fill-height>
+                  <!-- <v-flex xs8 v-if="isClientRadio"> -->
+                  <v-flex xs8>
+                    <v-select :items="checkAllOrgSummary" label="Select Partner Agency"></v-select>
+                  </v-flex>
+                </v-layout>
+                <v-layout align-start justify-space-between row fill-height>
+                  <v-flex xs8 mt-4>
+                    <span class="title">Applicant is using public assistance:</span>
+                  </v-flex>
+                  <v-flex xs2>
+                    <v-switch
+                      v-model="answers.pubAssist"
+                      :label="`${answers.pubAssist.toString()}`"
+                    ></v-switch>
+                  </v-flex>
+                </v-layout>
+                <v-layout align-start justify-space-between row fill-height>
+                  <v-flex xs8 mt-4>
+                    <span class="title">Applicant is in eligible trimester:</span>
+                  </v-flex>
+                  <v-flex xs2>
+                    <v-switch v-model="answers.isPreg" :label="`${answers.isPreg.toString()}`"></v-switch>
+                  </v-flex>
+                </v-layout>
+                <v-layout align-start justify-space-between row fill-height>
+                  <v-flex xs8 mt-4>
+                    <span class="title">Applicant is age-eligible:</span>
+                  </v-flex>
+                  <v-flex xs2>
+                    <v-switch v-model="answers.momAge" :label="`${answers.momAge.toString()}`"></v-switch>
+                  </v-flex>
+                </v-layout>
+                <v-layout align-start justify-space-between row fill-height>
+                  <v-flex xs8 mt-4>
+                    <span class="title">Applicant's child is age-eligible:</span>
+                  </v-flex>
+                  <v-flex xs2>
+                    <v-switch
+                      v-model="answers.infantAge"
+                      :label="`${answers.infantAge.toString()}`"
+                    ></v-switch>
+                  </v-flex>
+                </v-layout>
+                <v-layout align-start justify-end row fill-height>
+                  <v-flex xs7>
+                    <v-btn @click="processAnswers">Click Me</v-btn>
+                  </v-flex>
+                  <!-- <span>Applicant ddd:</span>
+                  <v-switch v-model="answers.pubAssist" :label="`${answers.pubAssist.toString()}`"></v-switch>-->
+                </v-layout>
+              </v-container>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-content>
 </template>
 
 <script>
